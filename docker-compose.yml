@@ -1,0 +1,52 @@
+version: '3.2'
+
+services:
+  web:
+    image: demo_web
+    networks:
+      swarm_demo:
+        aliases:
+        - web
+    deploy:
+      mode: replicated
+      replicas: 1
+      placement:
+        constraints:
+          # - node.hostname == vultr.guest1
+          - node.role == manager
+    command: /usr/local/bin/gunicorn -w 2 -b :5678 start:app
+
+  nginx:
+    image: demo_nginx
+    ports:
+      -  "80:80"
+    networks:
+      swarm_demo:
+        aliases:
+        - demo_nginx
+    deploy:
+      mode: replicated
+      replicas: 1
+      placement:
+        constraints:
+          # - node.hostname == vultr.guest1
+          - node.role == manager
+
+  db:
+    image: mongo:3.4
+    networks:
+      swarm_demo:
+        aliases:
+        - demo_db
+    deploy:
+      mode: replicated
+      replicas: 1
+      placement:
+        constraints:
+          # - node.hostname == vultr.guest2
+          - node.role == worker
+
+networks:
+  swarm_demo:
+    driver: overlay
+
