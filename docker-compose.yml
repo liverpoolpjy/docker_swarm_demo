@@ -6,7 +6,7 @@ services:
     networks:
       swarm_demo:
         aliases:
-        - web
+        - demo_web
     deploy:
       mode: replicated
       replicas: 1
